@@ -1,0 +1,52 @@
+# CodeIgniter .gitignore
+
+# Database credentials (PENTING: jangan commit file ini dengan kredensial asli!)
+# application/config/database.php
+
+# Cache
+application/cache/*
+!application/cache/index.html
+!application/cache/.htaccess
+
+# Logs
+application/logs/*
+!application/logs/index.html
+!application/logs/.htaccess
+
+# Session files
+application/sessions/*
+
+# User uploaded files
+files/*
+!files/index.html
+asset/image/avatars/*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Backup files
+production_backup.sql
+production_backup_clean.sql
+schema.sql
+
+# Environment files
+.env
