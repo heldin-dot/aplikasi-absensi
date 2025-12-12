@@ -9,8 +9,8 @@ class Pengumuman_model extends MY_Model {
         $this->fields = array(
             "pengumuman.judul",
             "pengumuman.isi",
+            "pengumuman.modified_date AS modified_date",
             "pengumuman.status",
-            "pengumuman.modified_date",
             "pengumuman.modified_user",
             "user.name AS nama_user"
             );

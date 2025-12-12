@@ -8,18 +8,18 @@ class Activity_model extends MY_Model {
         $this->primaryKey = "activity.id_activity";
         $this->fields = array(
             "activity.id_user",
-            "activity.tanggal",
+            "activity.tanggal AS tanggal",
             "activity.judul",
-            "activity.isi",
             "activity.keluar",
             "activity.kembali",
-            "activity.modified_date",
+            "activity.modified_date AS modified_date",
+            "activity.isi",
             "activity.modified_user",
             "activity.id_branch",
             "user.name AS nama_user",
             "branch.nama AS nama_branch"
             );
-        $this->orderBy = array("activity.tanggal" => "ASC");
+        $this->orderBy = array("activity.modified_date" => "DESC", "activity.tanggal" => "DESC");
         $this->relations = array(
             "user AS user" => "user.id_user = activity.id_user",
             "branch AS branch" => "branch.id_branch = activity.id_branch"

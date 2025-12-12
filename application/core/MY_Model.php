@@ -189,6 +189,16 @@ class MY_Model extends CI_Model {
                     $ord =$orderFieldsView[$_POST['order']['0']['column']];
                 }                
                 $this->db->order_by($ord, $_POST['order']['0']['dir']);
+                
+                // Preserve secondary sorting from default orderBy if exists
+                if (!empty($this->orderBy)) {
+                    foreach ($this->orderBy as $key => $value) {
+                        // Only add secondary sort if it's different from primary column
+                        if ($key !== $ord) {
+                            $this->db->order_by($key, $value);
+                        }
+                    }
+                }
             }
         } else {
             if (!empty($this->orderBy)) {
@@ -206,8 +216,6 @@ class MY_Model extends CI_Model {
                 $this->db->limit($_POST['length'], $_POST['start']);
         }
         $query = $this->db->get();
-//        return $query->result();
-//        echo $this->db->last_query();
         return $query->result_array();
     }
 

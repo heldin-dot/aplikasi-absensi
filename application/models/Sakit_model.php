@@ -9,16 +9,16 @@ class Sakit_model extends MY_Model {
         $this->fields = array(
             "sakit.id_user",
             "sakit.diagnosa",
+            "sakit.tgl_mulai AS tgl_mulai",
+            "sakit.tgl_akhir AS tgl_akhir",
+            "sakit.modified_date AS modified_date",
             "sakit.foto",
-            "sakit.tgl_mulai",
-            "sakit.tgl_akhir",
-            "sakit.modified_date",
             "sakit.modified_user",
             "sakit.id_branch",
             "user.name AS nama_user",
             "branch.nama AS nama_branch"
             );
-        $this->orderBy = array("sakit.tgl_akhir" => "DESC");
+        $this->orderBy = array("sakit.modified_date" => "DESC", "sakit.tgl_akhir" => "DESC");
         $this->relations = array(
             "user AS user" => "user.id_user = sakit.id_user",
             "branch AS branch" => "branch.id_branch = sakit.id_branch"

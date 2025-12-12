@@ -7,25 +7,25 @@ class Cuti_model extends MY_Model {
         $this->table = "cuti";
         $this->primaryKey = "cuti.id_cuti";
         $this->fields = array(
+            "cuti.status",
             "cuti.id_user",
             "cuti.tujuan",
+            "cuti.tgl_mulai AS tgl_mulai",
+            "cuti.tgl_akhir AS tgl_akhir",
+            "cuti.modified_date AS modified_date",
             "cuti.foto",
-            "cuti.tgl_mulai",
-            "cuti.tgl_akhir",
             "cuti.atasan1",
             "cuti.telp1",
             "cuti.atasan2",
             "cuti.telp2",
             "cuti.darurat",
             "cuti.handle",
-            "cuti.status",
-            "cuti.modified_date",
             "cuti.modified_user",
             "cuti.id_branch",
             "user.name AS nama_user",
             "branch.nama AS nama_branch"
             );
-        $this->orderBy = array("cuti.status" => "ASC");
+        $this->orderBy = array("cuti.status" => "ASC", "cuti.modified_date" => "DESC", "cuti.tgl_akhir" => "DESC");
         $this->relations = array("user AS user" => "user.id_user = cuti.id_user");
         $this->joins = array("left");
         $this->relations = array(
