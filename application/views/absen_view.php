@@ -52,9 +52,6 @@
 
 
 <script>
-    startTime();
-    getLocation();
-    cek();
     var in_capture = '';
     var out_capture = '';
     var lon = null;
@@ -62,6 +59,7 @@
     var id = '';
     var in_date = '';
     var out_date = '';
+    
     function cekFotoCekin(){
         document.getElementById("in_capture").click();
     }
@@ -69,29 +67,39 @@
         document.getElementById("out_capture").click();
     }
     function cek(){
+        var url = "<?php echo base_url('absen/getAbsen/'); ?>" + "<?php echo $user_id; ?>";
         $.ajax({
-            url: "{base_url}absen/getAbsen/{user_id}",
+            url: url,
             type: "POST",
             data: {
             },
             dataType: "JSON",
             success: function (data)
             {
-                if(data!=null){
-                    id = data.id_absen;
-                    in_date = data.in_date;
-                    out_date = data.out_date;
-                    console.log(in_date.substring(11, 19));
-                    document.getElementById('masuk').innerHTML = in_date.substring(11, 19);
-                    document.getElementById('keluar').innerHTML = out_date.substring(11, 19);					
-                    in_capture = data.in_capture;					
-                    out_capture = data.out_capture;
+                if(data!=null && typeof data === 'object'){
+                    if(data.id_absen) {
+                        id = data.id_absen;
+                        in_date = data.in_date ? data.in_date : '';
+                        out_date = data.out_date ? data.out_date : '';
+                        
+                        if(in_date && in_date.length > 10) {
+                            var masukTime = in_date.substring(11, 19);
+                            document.getElementById('masuk').innerHTML = masukTime;
+                        }
+                        
+                        if(out_date && out_date !== '0000-00-00 00:00:00' && out_date.length > 10) {
+                            var keluarTime = out_date.substring(11, 19);
+                            document.getElementById('keluar').innerHTML = keluarTime;
+                        }
+                        
+                        in_capture = data.in_capture ? data.in_capture : '';					
+                        out_capture = data.out_capture ? data.out_capture : '';
+                    }
                 }
-                console.log(id);
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
-                console.log(errorThrown);
+                console.log("cek() error: " + errorThrown);
             }
         });
     }
@@ -152,7 +160,7 @@
         }
 			var waktu = '0000-00-00 00:00:00';
 			$.ajax({
-				url: "{base_url}absen/getWaktuServer",
+				url: "<?php echo base_url('absen/getWaktuServer'); ?>",
 				type: "POST",
 				async: false,
 				//dataType: "JSON",
@@ -180,16 +188,16 @@
             }else{
                 if(in_date=='0000-00-00 00:00:00' || in_date==''){
                     $.ajax({
-                            url: "{base_url}absen/"+stat,
+                            url: "<?php echo base_url('absen/'); ?>"+stat,
                             type: "POST",
                             data: {
                                     id_absen: id,
 //                                    in_capture: in_capture,
-                                    id_user: '{user_id}', 
+                                    id_user: '<?php echo $user_id; ?>', 
                                     in_date: waktu,
                                     in_long: lon,
                                     in_lat: lat,
-                                    id_branch: '{user_branch}',
+                                    id_branch: '<?php echo $user_branch; ?>',
                                     status: '0',
                                     method: stat
                             },
@@ -197,15 +205,19 @@
                             success: function (data)
                             {
                                     if (data.success) {
-                                            UIkit.modal.alert("Waktu masuk anda : " + document.getElementById('waktuSekarang').textContent);
                                             cek();
+                                            // Tampilkan waktu dari database setelah cek() selesai
+                                            setTimeout(function() {
+                                                var masukTime = document.getElementById('masuk').innerHTML;
+                                                UIkit.modal.alert("Waktu masuk anda : " + masukTime);
+                                            }, 500);
                                     } else {
                                             UIkit.modal.alert(data.msg);
                                     }
                                     modal.hide();
                             },
                             beforeSend: function(){                
-                                    modal = UIkit.modal.blockUI("<img src='{base_url}asset/altair/assets/img/spinners/spinner.gif'> Proses...");
+                                    modal = UIkit.modal.blockUI("<img src='<?php echo base_url('asset/altair/assets/img/spinners/spinner.gif'); ?>'> Proses...");
                             },
                             error: function (jqXHR, textStatus, errorThrown)
                             {
@@ -224,7 +236,7 @@
 			
 			var waktu = '0000-00-00 00:00:00';
 			$.ajax({
-				url: "{base_url}absen/getWaktuServer",
+				url: "<?php echo base_url('absen/getWaktuServer'); ?>",
 				type: "POST",
 				async: false,
 				//dataType: "JSON",
@@ -251,12 +263,12 @@
             }else{
 //                if(out_date=='0000-00-00 00:00:00' || out_date==''){
                     $.ajax({
-                            url: "{base_url}absen/update",
+                            url: "<?php echo base_url('absen/update'); ?>",
                             type: "POST",
                             data: {
                                     id_absen: id,
     //                                out_capture: out_capture,
-                                    id_user: '{user_id}', 
+                                    id_user: '<?php echo $user_id; ?>', 
                                     out_date: waktu,
                                     out_long: lon,
                                     out_lat: lat,
@@ -267,15 +279,19 @@
                             success: function (data)
                             {
                                 if (data.success) {
-                                    UIkit.modal.alert("Waktu cekout anda : " + document.getElementById('waktuSekarang').textContent);
-                                        cek();
+                                    cek();
+                                    // Tampilkan waktu dari database setelah cek() selesai
+                                    setTimeout(function() {
+                                        var keluarTime = document.getElementById('keluar').innerHTML;
+                                        UIkit.modal.alert("Waktu cekout anda : " + keluarTime);
+                                    }, 500);
                                 } else {
                                     UIkit.modal.alert(data.msg);
                                 }
                                 modal.hide();
                             },
                             beforeSend: function(){                
-                                modal = UIkit.modal.blockUI("<img src='{base_url}asset/altair/assets/img/spinners/spinner.gif'> Proses...");
+                                modal = UIkit.modal.blockUI("<img src='<?php echo base_url('asset/altair/assets/img/spinners/spinner.gif'); ?>'> Proses...");
                             },
                             error: function (jqXHR, textStatus, errorThrown)
                             {
@@ -290,4 +306,9 @@
         }
 //        $("#out_capture").val('');
     }
+    
+    // Initialize on page load
+    startTime();
+    getLocation();
+    cek();
 </script>

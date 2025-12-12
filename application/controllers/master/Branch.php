@@ -23,6 +23,7 @@ class Branch extends MY_Controller {
         //TYPE: EMAIL/STRING/INT/FLOAT/BOOLEAN/DATE/PASSWORD/URL/IP/MAC/RAW/DATA
         $this->fields = array(
             "nama" => array("TIPE" => "STRING", "LABEL" => "Menu Name"),
+            "timezone" => array("TIPE" => "STRING", "LABEL" => "Timezone"),
             "ket" => array("TIPE" => "STRING", "LABEL" => "Sort"),
             "modified_date" => array("TIPE" => "DATE", "LABEL" => "Status"),
             "action" => array("TIPE" => "TRANSACTION", "LABEL" => "Action")
@@ -51,6 +52,7 @@ class Branch extends MY_Controller {
         $this->form_validation->set_error_delimiters('', '');
 
         $this->form_validation->set_rules('nama', 'Diagnsa', 'trim|required|min_length[1]|max_length[255]');
+        $this->form_validation->set_rules('timezone', 'Timezone', 'trim|required');
         
 
         if ($this->form_validation->run() == FALSE) {

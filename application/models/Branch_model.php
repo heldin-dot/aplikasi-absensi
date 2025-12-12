@@ -8,6 +8,7 @@ class Branch_model extends MY_Model {
         $this->primaryKey = "branch.id_branch";
         $this->fields = array(
             "branch.nama",
+            "branch.timezone",
             "branch.ket",
             "branch.modified_date",
             "branch.modified_user",

@@ -71,10 +71,13 @@ class Absen extends MY_Controller {
                 } elseif ($key == $this->pkField) {
                     $this->pkFieldValue = !$value ? $this->uuid->v4() : $value;
                     $data[$key] = $this->pkFieldValue;
-//                } elseif ($key == 'in_date') {
-//                    $data[$key] = date('Y-m-d H:i:s');
-//                } elseif ($key == 'out_date') {
-//                    $data[$key] = date('Y-m-d H:i:s');
+                } elseif ($key == 'id_user') {
+                    // Jika id_user tidak valid atau literal string '{user_id}', gunakan session
+                    if (!$value || $value == '{user_id}') {
+                        $data[$key] = $this->session->userdata('sess_user_id');
+                    } else {
+                        $data[$key] = $value;
+                    }
                 } else {
                     if (isset($value)) {
                         $data[$key] = $value;
@@ -87,15 +90,31 @@ class Absen extends MY_Controller {
     }
     
     public function getWaktuServer() {
-		echo date("Y-m-d H:m:s");
+        // Ambil timezone dari branch user
+        $user_id = $this->session->userdata('sess_user_id');
+        $user = $this->db->select('id_branch')->from('user')->where('id_user', $user_id)->get()->row();
+        
+        $timezone = 'Asia/Jakarta'; // default
+        if ($user && $user->id_branch) {
+            $branch = $this->db->select('timezone')->from('branch')->where('id_branch', $user->id_branch)->get()->row();
+            if ($branch && $branch->timezone) {
+                $timezone = $branch->timezone;
+            }
+        }
+        
+        date_default_timezone_set($timezone);
+        echo date("Y-m-d H:i:s");
     }
     
     public function getAbsen($id) {
-    	$data=$this->Absen_model->getAbsen($id);
-	echo json_encode($data,JSON_NUMERIC_CHECK);
-//        $event = $this->model->getAbsen($id);
-//        
-//        return $event;
+        // Jika parameter tidak valid atau '{user_id}' (not parsed), gunakan session
+        if (!$id || $id == '{user_id}') {
+            $id = $this->session->userdata('sess_user_id');
+        }
+        
+        $data = $this->Absen_model->getAbsen($id);
+        
+        echo json_encode($data);
     }
 
     public function upload_file($id='') {

@@ -5,6 +5,7 @@
             <thead>
                 <tr>
                     <th>Nama</th>
+                    <th>Timezone</th>
                     <th>Keterangan</th>
                     <th>Modified Date</th>
                     <th>Action</th>
@@ -40,6 +41,21 @@
                             </div>
                             <div class="uk-width-medium-3-4">
                                 <input id="nama" name="nama" class="k-textbox" style="width: 70%;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-width-medium-4-4">
+                        <div class="uk-grid" style="margin-top: 5px">
+                            <div class="uk-width-medium-1-4">
+                                <label for="timezone" class="uk-form-label">Timezone</label>
+                            </div>
+                            <div class="uk-width-medium-3-4">
+                                <select id="timezone" name="timezone" class="k-textbox" style="width: 70%;">
+                                    <option value="">-- Pilih Timezone --</option>
+                                    <option value="Asia/Jakarta">WIB (UTC+7) - Jawa, Sumatera</option>
+                                    <option value="Asia/Makassar">WITA (UTC+8) - Sulawesi, Kalimantan, Bali</option>
+                                    <option value="Asia/Jayapura">WIT (UTC+9) - Papua, Maluku</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -164,7 +180,8 @@
             type: "POST",
             data: {
                 id_branch: $("#id_branch").val(),
-                nama: $("#nama").val(), 
+                nama: $("#nama").val(),
+                timezone: $("#timezone").val(), 
                 ket: $("#ket").val(),
                 modified_user: '{user_id}',
                 modified_date: '',
@@ -199,6 +216,7 @@
             success: function (data) {
                 $("#id_branch").val(data.id_branch);
                 $("#nama").val(data.nama);
+                $("#timezone").val(data.timezone);
                 $("#ket").val(data.ket);
                 
                         

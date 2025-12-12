@@ -28,11 +28,17 @@ class Absen_model extends MY_Model {
 
     
     public function getAbsen($id){
-        $sql = 'SELECT * FROM absen WHERE SUBSTR(in_date,1,10)="'. Date("Y-m-d"). '" AND id_user="' . $id .'"';
+        // Set timezone sesuai config
+        $timezone = $this->config->item('time_reference');
+        if ($timezone) {
+            date_default_timezone_set($timezone);
+        }
+        
+        $today = date("Y-m-d");
+        $sql = 'SELECT * FROM absen WHERE DATE(in_date)="'.$today.'" AND id_user="'.$id.'" ORDER BY in_date DESC LIMIT 1';
         $query = $this->db->query($sql);
-        $result =$query->row();
+        $result = $query->row();
         return $result;
-//        return $query->result();
     }
     
 }

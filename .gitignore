@@ -1,7 +1,8 @@
 # CodeIgniter .gitignore
 
-# Database credentials (PENTING: jangan commit file ini dengan kredensial asli!)
-# application/config/database.php
+# Configuration files (environment-specific)
+application/config/config.php
+application/config/database.php
 
 # Cache
 application/cache/*
