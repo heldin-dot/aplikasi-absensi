@@ -166,7 +166,17 @@ class MY_Controller extends CI_Controller {
                         }
                      } elseif ("TIPE" == array_search("STRING", $value)) {
                         $custom = isset($value["CUSTOM"]) ? $value["CUSTOM"] : FALSE;
-                        if ($custom) {
+                        
+                        // Special handling for timezone field
+                        if ($key == "timezone") {
+                            $timezoneMap = array(
+                                'Asia/Jakarta' => 'WIB (UTC+7)',
+                                'Asia/Makassar' => 'WITA (UTC+8)',
+                                'Asia/Jayapura' => 'WIT (UTC+9)'
+                            );
+                            $displayValue = isset($timezoneMap[$list[$key]]) ? $timezoneMap[$list[$key]] : $list[$key];
+                            $row[] = $displayValue;
+                        } elseif ($custom) {
                             $row[] = $this->customAdmin($list[$key]);
                         } else {
                             $row[] = $list[$key];
