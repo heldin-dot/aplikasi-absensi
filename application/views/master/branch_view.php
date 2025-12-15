@@ -52,9 +52,9 @@
                             <div class="uk-width-medium-3-4">
                                 <select id="timezone" name="timezone" class="k-textbox" style="width: 70%;">
                                     <option value="">-- Pilih Timezone --</option>
-                                    <option value="Asia/Jakarta">WIB (UTC+7) - Jawa, Sumatera</option>
-                                    <option value="Asia/Makassar">WITA (UTC+8) - Sulawesi, Kalimantan, Bali</option>
-                                    <option value="Asia/Jayapura">WIT (UTC+9) - Papua, Maluku</option>
+                                    <option value="Asia/Jakarta">Indonesia Barat</option>
+                                    <option value="Asia/Makassar">Indonesia Tengah</option>
+                                    <option value="Asia/Jayapura">Indonesia Timur</option>
                                 </select>
                             </div>
                         </div>

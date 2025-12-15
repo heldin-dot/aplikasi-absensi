@@ -170,9 +170,9 @@ class MY_Controller extends CI_Controller {
                         // Special handling for timezone field
                         if ($key == "timezone") {
                             $timezoneMap = array(
-                                'Asia/Jakarta' => 'WIB (UTC+7)',
-                                'Asia/Makassar' => 'WITA (UTC+8)',
-                                'Asia/Jayapura' => 'WIT (UTC+9)'
+                                'Asia/Jakarta' => 'Indonesia Barat',
+                                'Asia/Makassar' => 'Indonesia Tengah',
+                                'Asia/Jayapura' => 'Indonesia Timur'
                             );
                             $displayValue = isset($timezoneMap[$list[$key]]) ? $timezoneMap[$list[$key]] : $list[$key];
                             $row[] = $displayValue;
