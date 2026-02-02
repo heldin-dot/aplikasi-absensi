@@ -110,6 +110,13 @@ class MY_Controller extends CI_Controller {
             foreach ($lists as $list) {
                 $no++;
                 $row = array();
+                
+                // Add default value for NULL fields
+                foreach ($this->fields as $key => $value) {
+                    if (!isset($list[$key])) {
+                        $list[$key] = "-";
+                    }
+                }
 
                 foreach ($this->fields as $key => $value) {
                     if ($key == "action") {

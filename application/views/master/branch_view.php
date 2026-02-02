@@ -1,10 +1,10 @@
-<h3 class="heading_b uk-margin-bottom">IZIN SAKIT</h3>
+<h3 class="heading_b uk-margin-bottom">CABANG</h3>
 <div class="md-card uk-margin-medium-bottom">
     <div class="md-card-content">
         <table id="dt_default" class="uk-table" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    <th>Nama</th>
+                    <th>Nama Cabang</th>
                     <th>Timezone</th>
                     <th>Keterangan</th>
                     <th>Modified Date</th>
@@ -37,7 +37,7 @@
                     <div class="uk-width-medium-4-4">
                         <div class="uk-grid" style="margin-top: 5px">
                             <div class="uk-width-medium-1-4">
-                                <label for="nama" class="uk-form-label">Nama</label>
+                                <label for="nama" class="uk-form-label">Nama Cabang</label>
                             </div>
                             <div class="uk-width-medium-3-4">
                                 <input id="nama" name="nama" class="k-textbox" style="width: 70%;" />

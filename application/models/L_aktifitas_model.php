@@ -23,7 +23,7 @@ class L_aktifitas_model extends MY_Model {
         $this->orderBy = array("aktifitas.tanggal" => "ASC");
         $this->relations = array(
             "user AS user" => "user.id_user = aktifitas.id_user",
-            "branch AS branch" => "branch.id_branch = aktifitas.id_branch"
+            "branch AS branch" => "branch.id_branch = user.id_branch"
             );
         $this->joins = array("left","left");
         

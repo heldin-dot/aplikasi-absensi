@@ -26,7 +26,7 @@ class L_absen_model extends MY_Model {
         $this->orderBy = array("user.name" => "ASC");
         $this->relations = array(
             "user AS user" => "user.id_user = absen.id_user",
-            "branch AS branch" => "branch.id_branch = absen.id_branch"
+            "branch AS branch" => "branch.id_branch = user.id_branch"
             );
         $this->joins = array(
             "left",

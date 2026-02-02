@@ -80,6 +80,13 @@ class Activity extends MY_Controller {
                     }
                 }
             }
+            
+            // Ambil id_branch langsung dari user profile (fresh dari DB)
+            $user_id = $data['id_user'] ?? $this->session->userdata('sess_user_id');
+            $user = $this->db->select('id_branch')->from('user')->where('id_user', $user_id)->get()->row();
+            if ($user && $user->id_branch) {
+                $data['id_branch'] = $user->id_branch;
+            }
 
             return array("valid" => TRUE, "data" => $data);
         }

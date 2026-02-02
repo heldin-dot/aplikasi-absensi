@@ -26,11 +26,9 @@ class L_cuti_model extends MY_Model {
             "branch.nama AS nama_branch"
             );
         $this->orderBy = array("cuti.status" => "ASC");
-        $this->relations = array("user AS user" => "user.id_user = cuti.id_user");
-        $this->joins = array("left");
         $this->relations = array(
             "user AS user" => "user.id_user = cuti.id_user",
-            "branch AS branch" => "branch.id_branch = cuti.id_branch"
+            "branch AS branch" => "branch.id_branch = user.id_branch"
             );
         $this->joins = array(
             "left",

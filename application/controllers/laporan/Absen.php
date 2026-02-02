@@ -23,12 +23,12 @@ class Absen extends MY_Controller {
         //TYPE: EMAIL/STRING/INT/FLOAT/BOOLEAN/DATE/PASSWORD/URL/IP/MAC/RAW/DATA
         $this->fields = array(
             "delete" => array("TIPE" => "TRANSACTION", "LABEL" => "Action"),
-            "nama_user" => array("TIPE" => "STRING", "LABEL" => "Menu Name"),
-            "nama_branch" => array("TIPE" => "STRING", "LABEL" => "Parent Menu"),
-            "in_date" => array("TIPE" => "STRING", "LABEL" => "URL"),
-            "latin" => array("TIPE" => "LOC", "LABEL" => "Sort"),
-            "out_date" => array("TIPE" => "STRING", "LABEL" => "Status"),
-            "latout" => array("TIPE" => "LOC", "LABEL" => "Type"),
+            "nama_user" => array("TIPE" => "STRING", "LABEL" => "User"),
+            "nama_branch" => array("TIPE" => "STRING", "LABEL" => "Branch"),
+            "in_date" => array("TIPE" => "DATE", "LABEL" => "Check In Date"),
+            "latin" => array("TIPE" => "LOC", "LABEL" => "Location Check In"),
+            "out_date" => array("TIPE" => "DATE", "LABEL" => "Check Out Date"),
+            "latout" => array("TIPE" => "LOC", "LABEL" => "Location Check Out"),
         );
         
         //$this->model->fieldsView = $this->fields;
@@ -151,7 +151,7 @@ class Absen extends MY_Controller {
     
     public function excel_(){
         
-        $this->load->library('Excel');
+        $this->load->library('excel');
         $this->excel->setActiveSheetIndex(0);
         $this->excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
         $this->excel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);

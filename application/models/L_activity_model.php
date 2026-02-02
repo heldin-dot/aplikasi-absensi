@@ -22,7 +22,7 @@ class L_activity_model extends MY_Model {
         $this->orderBy = array("activity.tanggal" => "ASC");
         $this->relations = array(
             "user AS user" => "user.id_user = activity.id_user",
-            "branch AS branch" => "branch.id_branch = activity.id_branch"
+            "branch AS branch" => "branch.id_branch = user.id_branch"
             );
         $this->joins = array(
             "left",

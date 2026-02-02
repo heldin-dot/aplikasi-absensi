@@ -21,7 +21,7 @@ class L_sakit_model extends MY_Model {
         $this->orderBy = array("sakit.tgl_akhir" => "DESC");
         $this->relations = array(
             "user AS user" => "user.id_user = sakit.id_user",
-            "branch AS branch" => "branch.id_branch = sakit.id_branch"
+            "branch AS branch" => "branch.id_branch = user.id_branch"
             );
         $this->joins = array(
             "left",
