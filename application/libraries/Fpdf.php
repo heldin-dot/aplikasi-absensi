@@ -1895,4 +1895,9 @@ protected function _enddoc()
 	$this->state = 3;
 }
 }
+
+// Alias untuk CodeIgniter (case-insensitive loader)
+class Fpdf extends FPDF {
+}
+
 ?>

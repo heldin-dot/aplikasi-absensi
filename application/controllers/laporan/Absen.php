@@ -151,7 +151,7 @@ class Absen extends MY_Controller {
     
     public function excel_(){
         
-        $this->load->library('excel');
+        $this->load->library('Excel');
         $this->excel->setActiveSheetIndex(0);
         $this->excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
         $this->excel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
