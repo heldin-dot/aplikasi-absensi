@@ -66,17 +66,16 @@
     function cekFotoCekout(){
         document.getElementById("out_capture").click();
     }
-    function cek(){
+    function cek(callback){
         var url = "<?php echo base_url('absen/getAbsen/'); ?>" + "<?php echo $user_id; ?>";
         $.ajax({
             url: url,
             type: "POST",
-            data: {
-            },
+            data: {},
             dataType: "JSON",
             success: function (data)
             {
-                if(data!=null && typeof data === 'object'){
+                if(data != null && typeof data === 'object'){
                     if(data.id_absen) {
                         id = data.id_absen;
                         in_date = data.in_date ? data.in_date : '';
@@ -96,64 +95,81 @@
                         out_capture = data.out_capture ? data.out_capture : '';
                     }
                 }
+                if(callback) callback();
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
-                console.log("cek() error: " + errorThrown);
+                if(callback) callback();
             }
         });
     }
     
     function startTime() {
-        var today = new Date();
-        var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
-        var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                       
-        var dayName = days[today.getDay()]
-        var month_Name = monthNames[today.getMonth()];
-        var y = today.getYear() + 1900;
-        var d = today.getDate();
-        var h = today.getHours();
-        var m = today.getMinutes();
-        var s = today.getSeconds();
-        m = checkTime(m);
-        s = checkTime(s);
-        document.getElementById('tglSekarang').innerHTML = dayName + ", " + d + " " + month_Name + "  " + y;
-        document.getElementById('waktuSekarang').innerHTML = h + ":" + m + ":" + s;
-//        document.getElementById('tempatSekarang').innerHTML = "Latitude: " + lat + "<br>Longitude: " + lon;
-        var t = setTimeout(startTime, 500);
+        // Ambil waktu dari server sesuai timezone branch user (bukan dari browser)
+        $.ajax({
+            url: "<?php echo base_url('absen/getWaktuServer'); ?>",
+            type: "GET",
+            dataType: "text",
+            success: function(serverTime) {
+                // serverTime format: "Y-m-d H:i:s" (misal: "2026-02-03 14:30:45")
+                if(serverTime && serverTime.length > 10) {
+                    var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+                    var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    
+                    // Parse server time
+                    var datePart = serverTime.substring(0, 10); // "2026-02-03"
+                    var timePart = serverTime.substring(11, 19); // "14:30:45"
+                    
+                    var parts = datePart.split('-');
+                    var year = parseInt(parts[0]);
+                    var month = parseInt(parts[1]) - 1;
+                    var day = parseInt(parts[2]);
+                    
+                    var timeParts = timePart.split(':');
+                    var h = timeParts[0];
+                    var m = timeParts[1];
+                    var s = timeParts[2];
+                    
+                    var serverDate = new Date(year, month, day);
+                    var dayName = days[serverDate.getDay()];
+                    var month_Name = monthNames[month];
+                    
+                    document.getElementById('tglSekarang').innerHTML = dayName + ", " + day + " " + month_Name + " " + year;
+                    document.getElementById('waktuSekarang').innerHTML = h + ":" + m + ":" + s;
+                }
+            },
+            error: function() {
+            }
+        });
         
-//        console.log(today.getYear() + 1900);
+        // Update every 1000ms (1 detik)
+        var t = setTimeout(startTime, 1000);
     }
-    function checkTime(i) {
-        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-        return i;
-    }
-    Date.prototype.getMonthName = function() {
-        return monthNames[today.getMonth()];
-    }
-    
     function getLocation() {
 		lon = null;
 		lat = null;
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
+            navigator.geolocation.getCurrentPosition(showPosition, showError, {timeout: 10000, enableHighAccuracy: true});
         } else { 
-            x.innerHTML = "Geolocation is not supported by this browser.";
+            document.getElementById('tempatSekarang').innerHTML = "<span style='color:red'>Geolocation not supported</span>";
+            UIkit.modal.alert("Geolocation tidak didukung oleh browser ini.");
         }
         function showPosition(position) {
             lon = position.coords.longitude;
             lat = position.coords.latitude;
-            console.log("Latitude: " + lat + "<br>Longitude: " + lon);
-            document.getElementById('tempatSekarang').innerHTML = "Latitude: " + lat + "<br>Longitude: " + lon;
+            document.getElementById('tempatSekarang').innerHTML = "Lat: " + lat.toFixed(6) + "<br>Lon: " + lon.toFixed(6);
+        }
+        function showError(error) {
+            document.getElementById('tempatSekarang').innerHTML = "<span style='color:red'>Lokasi tidak ditemukan</span>";
+            UIkit.modal.alert("Gagal mengakses lokasi. Pastikan izin lokasi sudah diberikan.");
         }
 
     }
  
 
     function simpan() {
-        if(id==''){
+        if(!id || id === ''){
             var stat = 'add';
         }else{
             var stat = 'update';
@@ -166,12 +182,10 @@
 				//dataType: "JSON",
 				success: function (data)
 				{
-					console.log(data);
 					waktu = data;
 				},
 				error: function (jqXHR, textStatus, errorThrown)
 				{
-					console.log(errorThrown);
 				}
 			});
             var today = new Date();
@@ -181,12 +195,11 @@
             var h = today.getHours();
             var i = today.getMinutes();
             var s = today.getSeconds();
-            console.log("Latitude: " + lat + "<br>Longitude: " + lon);
             
-            if(lon==null || lon=='null' || lat==null || lat=='null'){
-                UIkit.modal.alert("Lokasi tidakk ditemukan . ");
+            if(!lon || lon === 'null' || !lat || lat === 'null' || lon === null || lat === null){
+                UIkit.modal.alert("Lokasi tidak ditemukan.");
             }else{
-                if(in_date=='0000-00-00 00:00:00' || in_date==''){
+                if(!in_date || in_date === '0000-00-00 00:00:00' || in_date === '' || in_date === null){
                     $.ajax({
                             url: "<?php echo base_url('absen/'); ?>"+stat,
                             type: "POST",
@@ -205,12 +218,15 @@
                             success: function (data)
                             {
                                     if (data.success) {
-                                            cek();
-                                            // Tampilkan waktu dari database setelah cek() selesai
-                                            setTimeout(function() {
+                                            // Gunakan callback untuk tunggu cek() selesai
+                                            cek(function() {
                                                 var masukTime = document.getElementById('masuk').innerHTML;
-                                                UIkit.modal.alert("Waktu masuk anda : " + masukTime);
-                                            }, 500);
+                                                if(masukTime && masukTime.trim() !== '') {
+                                                    UIkit.modal.alert("Waktu masuk anda : " + masukTime);
+                                                } else {
+                                                    UIkit.modal.alert("Absen masuk berhasil. Waktu: " + waktu);
+                                                }
+                                            });
                                     } else {
                                             UIkit.modal.alert(data.msg);
                                     }
@@ -222,7 +238,6 @@
                             error: function (jqXHR, textStatus, errorThrown)
                             {
                                     modal.hide();
-                                    console.log(errorThrown);
                             }
                         });
                 }else{
@@ -232,7 +247,7 @@
 //            $("#in_capture").val('');
     }
     function update() {
-        if(id!=''){
+        if(id && id !== ''){
 			
 			var waktu = '0000-00-00 00:00:00';
 			$.ajax({
@@ -242,12 +257,10 @@
 				//dataType: "JSON",
 				success: function (data)
 				{
-					console.log(data);
 					waktu = data;
 				},
 				error: function (jqXHR, textStatus, errorThrown)
 				{
-					console.log(errorThrown);
 				}
 			});
             var today = new Date();
@@ -258,8 +271,8 @@
             var i = today.getMinutes();
             var s = today.getSeconds();
         
-            if(lon==null || lon=='null' || lat==null || lat=='null'){
-                UIkit.modal.alert("Lokasi tidakk ditemukan . ");
+            if(!lon || lon === 'null' || !lat || lat === 'null' || lon === null || lat === null){
+                UIkit.modal.alert("Lokasi tidak ditemukan.");
             }else{
 //                if(out_date=='0000-00-00 00:00:00' || out_date==''){
                     $.ajax({
@@ -279,12 +292,15 @@
                             success: function (data)
                             {
                                 if (data.success) {
-                                    cek();
-                                    // Tampilkan waktu dari database setelah cek() selesai
-                                    setTimeout(function() {
+                                    // Gunakan callback untuk tunggu cek() selesai
+                                    cek(function() {
                                         var keluarTime = document.getElementById('keluar').innerHTML;
-                                        UIkit.modal.alert("Waktu cekout anda : " + keluarTime);
-                                    }, 500);
+                                        if(keluarTime && keluarTime.trim() !== '') {
+                                            UIkit.modal.alert("Waktu cekout anda : " + keluarTime);
+                                        } else {
+                                            UIkit.modal.alert("Absen pulang berhasil. Waktu: " + waktu);
+                                        }
+                                    });
                                 } else {
                                     UIkit.modal.alert(data.msg);
                                 }
@@ -296,7 +312,6 @@
                             error: function (jqXHR, textStatus, errorThrown)
                             {
                                 modal.hide();
-                                console.log(errorThrown);
                             }
                     });	
 //                }else{

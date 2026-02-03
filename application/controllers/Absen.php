@@ -41,14 +41,18 @@ class Absen extends MY_Controller {
     }
     
     public function index() {
+        // Get user branch for attendance location tracking
+        $user_id = $this->session->userdata('sess_user_id');
+        $user = $this->db->select('id_branch')->from('user')->where('id_user', $user_id)->get()->row();
+        $user_branch = $user ? $user->id_branch : '';
+        
         $data = array(
             'base_url' => base_url(),
-            'user_id' => $this->session->userdata('sess_user_id'),
-//            'user_email' => $this->session->userdata('sess_email'),
+            'user_id' => $user_id,
             'user_nama' => $this->session->userdata('sess_nama'),
-//            'user_hak_akses' => $this->session->userdata('sess_hak_akses')
+            'user_branch' => $user_branch
         );
-        $this->parser->parse("setting/menu_view", $data);        
+        $this->parser->parse("absen_view", $data);        
     }
     
     public function dataInput() {
@@ -78,6 +82,15 @@ class Absen extends MY_Controller {
                     } else {
                         $data[$key] = $value;
                     }
+                } elseif ($key == 'id_branch') {
+                    // Jika id_branch kosong atau tidak valid, ambil dari user yang sedang login
+                    if (!$value || $value === '') {
+                        $user_id = $this->session->userdata('sess_user_id');
+                        $user = $this->db->select('id_branch')->from('user')->where('id_user', $user_id)->get()->row();
+                        $data[$key] = $user ? $user->id_branch : '';
+                    } else {
+                        $data[$key] = $value;
+                    }
                 } else {
                     if (isset($value)) {
                         $data[$key] = $value;
@@ -90,19 +103,33 @@ class Absen extends MY_Controller {
     }
     
     public function getWaktuServer() {
-        // Ambil timezone dari branch user
+        // Get user timezone from their branch with validation
         $user_id = $this->session->userdata('sess_user_id');
+        
+        if (!$user_id) {
+            header('Content-Type: text/plain');
+            http_response_code(401);
+            echo 'Unauthorized';
+            return;
+        }
+        
         $user = $this->db->select('id_branch')->from('user')->where('id_user', $user_id)->get()->row();
         
         $timezone = 'Asia/Jakarta'; // default
         if ($user && $user->id_branch) {
             $branch = $this->db->select('timezone')->from('branch')->where('id_branch', $user->id_branch)->get()->row();
-            if ($branch && $branch->timezone) {
+            if ($branch && !empty($branch->timezone)) {
                 $timezone = $branch->timezone;
             }
         }
         
+        // Validate timezone before using
+        if (!in_array($timezone, timezone_identifiers_list())) {
+            $timezone = 'Asia/Jakarta';
+        }
+        
         date_default_timezone_set($timezone);
+        header('Content-Type: text/plain; charset=utf-8');
         echo date("Y-m-d H:i:s");
     }
     
@@ -112,9 +139,14 @@ class Absen extends MY_Controller {
             $id = $this->session->userdata('sess_user_id');
         }
         
-        $data = $this->Absen_model->getAbsen($id);
-        
-        echo json_encode($data);
+        try {
+            $data = $this->Absen_model->getAbsen($id);
+            header('Content-Type: application/json');
+            echo json_encode($data);
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(array('error' => $e->getMessage()));
+        }
     }
 
     public function upload_file($id='') {
